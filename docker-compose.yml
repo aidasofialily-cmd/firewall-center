@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  controller:
+    build: ./controller
+    container_name: firewall-controller
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/controller:/data
+      - ./certs:/certs:ro
+    environment:
+      - FLW_CONTROLLER_HOST=0.0.0.0
+      - FLW_CONTROLLER_PORT=8080
+
+  agent:
+    build: ./agent
+    container_name: firewall-agent
+    depends_on:
+      - controller
+    volumes:
+      - ./data/agent:/data
+      - ./certs:/certs:ro
+    environment:
+      - FLW_CONTROLLER_URL=http://controller:8080
+      - FLW_AGENT_NAME=agent-demo
